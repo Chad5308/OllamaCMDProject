@@ -22,7 +22,7 @@ public class FileSystemPlugin
     {
         foreach(var name in names)
         {
-            gpaData.Add(name, rnd.Next(80, 104));
+            gpaData.Add(name, rnd.Next(2, 4));
         }
 
         studentName = names[(int)rnd.Next(0, 4)];

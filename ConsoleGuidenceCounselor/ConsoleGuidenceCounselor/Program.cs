@@ -7,7 +7,7 @@ using Microsoft.SemanticKernel.ChatCompletion;
 using Microsoft.SemanticKernel.Connectors.Ollama;
 
 var builder = Kernel.CreateBuilder();
-var modelId = "qwen3:14b";
+var modelId = "qwen3:8b";
 var endpoint = new Uri("http://localhost:11434");
 
 builder.Services.AddOllamaChatCompletion(modelId, endpoint);
