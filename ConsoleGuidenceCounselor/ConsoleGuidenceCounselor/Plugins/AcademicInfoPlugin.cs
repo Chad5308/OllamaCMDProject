@@ -14,20 +14,32 @@ public class AcademicInfoPlugin
     private string email = "tanczosm@eastonsd.org";
 
 
-    private Dictionary<string, double> gpaData = new Dictionary<string, double>();
-    //Such as, gpa, schedule, grad requirments, test scores, aura
+    private Dictionary<string, AcademicInfo> students = new Dictionary<string, AcademicInfo>();
 
-    [Description ("Represents a Dictionary list of keys paired to values where the key is the name of a class in the students schedule, and the value is the time the class meets at")]
-    private Dictionary<string, TimeOnly> classes = new Dictionary<string, TimeOnly>();
 
-    
 
     public AcademicInfoPlugin()
     {
-        gpaData.Add(email, 2.86);
-        classes.Add("Physics 2", new TimeOnly(7, 20, 0));
-        classes.Add("Calc 3", new TimeOnly(10, 15, 0));
-        classes.Add("Honors Humanities", new TimeOnly(11, 38, 0));
+        //gpaData.Add(email, 2.86);
+        students.Add(email, new AcademicInfo()
+        {
+            GpaUnweighted = 2,
+            GpaWeighted = 4,
+            ClassRank = 565,
+            CreditsEarned = 4.25,
+            TestScores = new Dictionary<string, double>()
+            {
+                {"ACT", 12.5 },
+                {"SAT", 875.2},
+                {"Algaebra Keystone", 900.28}
+            },
+            Classes = new Dictionary<string, TimeOnly>()
+            {
+                {"Physics 2", new TimeOnly(7, 20, 0)},
+                {"Calc 3", new TimeOnly(10, 15, 0)},
+                {"Honors Humanities", new TimeOnly(11, 38, 0) }
+            }
+        });
 
         Console.WriteLine("Welcome - " + email + "!");
     }
@@ -39,25 +51,31 @@ public class AcademicInfoPlugin
     }
 
 
-    [KernelFunction, Description("Gets the current students gpa")]
-    public double GetCurrentGPA(string email)
+    [KernelFunction, Description("Gets the current students wighted gpa")]
+    public double GetWeightedGPA(string email)
     {
-        return gpaData[email];
+        return students[email].GpaWeighted;
+    }
+
+    [KernelFunction, Description("Gets the current students unwighted gpa")]
+    public double GetUnweightedGPA(string email)
+    {
+        return students[email].GpaUnweighted;
     }
 
     [KernelFunction, Description("Gets the students schedule in the form of a Dictionary where the key is the name of the class and the value is the time of the class. The classes are in order of when they are scheduled for")]
     public Dictionary<string, TimeOnly> getSchedule()
     {
-        return classes;
+        return students[email].Classes;
     }
 
     [KernelFunction, Description("Gets the class start time given the name if the class. If an empty string is returned respond by saying The class in not in your schedule")]
     public string getClass(string className)
     {
-        if(classes.ContainsKey(className))
+        if(students[email].Classes.ContainsKey(className))
         {
-            return className + " is scheduled for " + classes[className].ToString();
-        }else
+            return className + " is scheduled for " + students[email].Classes[className].ToString();
+        }else 
         {
             return "";
         }

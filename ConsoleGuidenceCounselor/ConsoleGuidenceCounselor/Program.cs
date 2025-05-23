@@ -18,18 +18,21 @@ builder.Services.AddOllamaChatCompletion(modelId, endpoint);
 //    .AddFromObject(new MyLightPlugin(turnedOn: true))
 //    .AddFromObject(new MyAlarmPlugin("11"))
 //    .AddFromObject(new AcademicInfoPlugin());
-builder.Plugins.AddFromObject(new AcademicInfoPlugin())
-    .AddFromObject(new GraduationRequirements());
+builder.Plugins.AddFromObject(new AcademicInfoPlugin());
 var kernel = builder.Build();
 var chatCompletionService = kernel.GetRequiredService<IChatCompletionService>();
 var settings = new OllamaPromptExecutionSettings { FunctionChoiceBehavior = FunctionChoiceBehavior.Auto() };
 
-var path = Path.Combine(Environment.CurrentDirectory, "SetupText.txt");
-var setuptext = File.ReadAllText(path);
+var setupPath = Path.Combine(Environment.CurrentDirectory, "SetupText.txt");
+var setuptext = File.ReadAllText(setupPath);
 
+var GradPath = Path.Combine(Environment.CurrentDirectory, "GraduationRequirements.txt");
+var graduationPathways = File.ReadAllText(GradPath);
+
+ChatMessageContent readPAGradRequirements = await chatCompletionService.GetChatMessageContentAsync(graduationPathways, settings, kernel);
 
 ChatMessageContent setupResult = await chatCompletionService.GetChatMessageContentAsync(setuptext, settings, kernel);
-Console.Write($"\n>>> Result: {setupResult}\n\n> ");
+writeTrimResults(setupResult);
 
 string? input = null;
 while ((input = Console.ReadLine()) is not null)
@@ -39,10 +42,17 @@ while ((input = Console.ReadLine()) is not null)
     try
     {
         ChatMessageContent chatResult = await chatCompletionService.GetChatMessageContentAsync(input, settings, kernel);
-        Console.Write($"\n>>> Result: {chatResult}\n\n> ");
+        writeTrimResults(chatResult);
     }
     catch (Exception ex)
     {
         Console.WriteLine($"Error: {ex.Message}\n\n> ");
     }
+}
+
+
+void writeTrimResults(ChatMessageContent chatMessageContent)
+{
+    string trimmedContent = chatMessageContent.Content.Substring(chatMessageContent.Content.IndexOf("</think") + 7);
+    Console.Write($"\n>>> Result: {trimmedContent}\n\n> ");
 }
