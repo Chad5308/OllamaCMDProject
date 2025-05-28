@@ -11,6 +11,8 @@ namespace ConsoleGuidenceCounselor.Plugins;
 /// </summary>
 public class AcademicInfoPlugin
 {
+
+    [Description ("The students personal email that you will use to look up their information")]
     private string email = "tanczosm@eastonsd.org";
 
 
@@ -31,7 +33,9 @@ public class AcademicInfoPlugin
             {
                 {"ACT", 12.5 },
                 {"SAT", 875.2},
-                {"Algaebra Keystone", 900.28}
+                {"algaebra keystone", 900.28},
+                {"biology keystone", 1002.3},
+                {"english keystone", 855.3}
             },
             Classes = new Dictionary<string, TimeOnly>()
             {
@@ -76,6 +80,26 @@ public class AcademicInfoPlugin
         {
             return className + " is scheduled for " + students[email].Classes[className].ToString();
         }else 
+        {
+            return "";
+        }
+    }
+
+    [KernelFunction, Description("Gets the students Test scores in the form of a Dictionary where the key is the name of the test and the value is the score on the test. You can use this data to check if the student meets the graduation requirements.")]
+    public Dictionary<string, double> getTestScoreDictionary()
+    {
+        return students[email].TestScores;
+    }
+
+    [KernelFunction, Description("Gets a test score of the student given the name of a test, ")]
+    public string getTestScore(string testName)
+    {
+        testName.ToLower();
+        if (students[email].TestScores.ContainsKey(testName))
+        {
+            return "Your test score on the " + testName + " was a " + students[email].TestScores[testName].ToString();
+        }
+        else
         {
             return "";
         }

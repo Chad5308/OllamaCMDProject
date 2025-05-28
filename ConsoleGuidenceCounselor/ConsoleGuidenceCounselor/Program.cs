@@ -13,11 +13,6 @@ var endpoint = new Uri("http://localhost:11434");
 
 builder.Services.AddOllamaChatCompletion(modelId, endpoint);
 
-//builder.Plugins
-//    .AddFromType<MyTimePlugin>()
-//    .AddFromObject(new MyLightPlugin(turnedOn: true))
-//    .AddFromObject(new MyAlarmPlugin("11"))
-//    .AddFromObject(new AcademicInfoPlugin());
 builder.Plugins.AddFromObject(new AcademicInfoPlugin());
 var kernel = builder.Build();
 var chatCompletionService = kernel.GetRequiredService<IChatCompletionService>();
@@ -26,11 +21,7 @@ var settings = new OllamaPromptExecutionSettings { FunctionChoiceBehavior = Func
 var setupPath = Path.Combine(Environment.CurrentDirectory, "SetupText.txt");
 var setuptext = File.ReadAllText(setupPath);
 
-var GradPath = Path.Combine(Environment.CurrentDirectory, "GraduationRequirements.txt");
-var graduationPathways = File.ReadAllText(GradPath);
-
-ChatMessageContent readPAGradRequirements = await chatCompletionService.GetChatMessageContentAsync(graduationPathways, settings, kernel);
-
+Console.WriteLine("Loading Counselor...");
 ChatMessageContent setupResult = await chatCompletionService.GetChatMessageContentAsync(setuptext, settings, kernel);
 writeTrimResults(setupResult);
 
